@@ -53,7 +53,7 @@ class Property(models.Model):
     # total_area = fields.Integer(string="Total Area", compute=_compute_total_area)
 
     def accept_offer(self):
-        self.state = 'accepted'
+        self.state = 'sold'
 
     def reject_offer(self):
         self.state = 'cancelled'
@@ -94,6 +94,9 @@ class Property(models.Model):
     #         }
     #     }
 
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return 'Estate Property - %s' % self.name
 class PropertyType(models.Model):
     _name = 'estate.property.type'
     _description = 'Estate Property Type'
