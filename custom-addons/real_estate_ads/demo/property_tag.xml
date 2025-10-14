@@ -1,0 +1,16 @@
+<odoo>
+    <data noupdate="1">
+        <record id="property_tag_cozy" model="estate.property.tag">
+            <field name="name">House</field>
+        </record>
+        <record id="property_tag_furnished" model="estate.property.tag">
+            <field name="name">Furnished</field>
+        </record>
+        <record id="property_tag_renovated" model="estate.property.tag">
+            <field name="name">Renovated</field>
+        </record>
+        <record id="property_tag_west_open" model="estate.property.tag">
+            <field name="name">West Open</field>
+        </record>
+    </data>
+</odoo>
