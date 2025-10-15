@@ -7,7 +7,7 @@
     Real Estate Module to show available properties.
     """,
     "category": "Sales",
-    "depends": ['base'],
+    "depends": ['base', 'mail', 'utm', 'website'],
     "data": [
 
         # Security Groups
@@ -26,6 +26,7 @@
         # Data Files
         # 'data/property_type.xml',
         'data/estate.property.type.csv',
+        'data/mail_template.xml',
 
         # Report
         'report/report_template.xml',

@@ -2,6 +2,7 @@ from odoo import fields, models, api, _
 
 class Property(models.Model):
     _name = 'estate.property'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'website.published.mixin', 'website.seo.metadata'] #'mail.alias.mixin', 'utm.mixin'
     _description = 'Estate Property'
 
     name = fields.Char(string="Name", required=True)
@@ -17,7 +18,7 @@ class Property(models.Model):
     description = fields.Text(string="Description")
     post_code = fields.Char(string="Postcode")
     date_availability = fields.Date(string="Date Available")
-    expected_price = fields.Float(string="Expected Price")
+    expected_price = fields.Float(string="Expected Price", tracking=True)
     best_offer = fields.Float(string="Best Offer")
     selling_price = fields.Float(string="Selling Price")
     bedrooms = fields.Integer(string="Bedrooms")
@@ -82,6 +83,10 @@ class Property(models.Model):
             'target': 'new' # => opens on a new window, similarly if used with self opens the page in the same page.
         }
 
+    def _compute_website_url(self):
+        for rec in self:
+            rec.website_url = "/properties/%s" % rec.id
+
     #Testing Client Actions
     # def action_client_action(self):
     #     return {
@@ -97,6 +102,14 @@ class Property(models.Model):
     def _get_report_base_filename(self):
         self.ensure_one()
         return 'Estate Property - %s' % self.name
+
+    def action_send_email(self):
+        mail_template = self.env.ref('real_estate_ads.offer_mail_template')
+        mail_template.send_mail(self.id, force_send=True)
+
+    def _get_emails(self):
+        return ','.join(self.offer_ids.mapped('partner_email'))
+
 class PropertyType(models.Model):
     _name = 'estate.property.type'
     _description = 'Estate Property Type'

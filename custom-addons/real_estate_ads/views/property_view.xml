@@ -5,7 +5,7 @@
         <record id="action_property_view_offers" model="ir.actions.act_window">
             <field name="name">Property</field>
             <field name="res_model">estate.property.offer</field>
-            <field name="view_mode">treeform</field>
+            <field name="view_mode">tree,form</field>
             <field name="domain">[('property_id', '=', active_id)]</field>
         </record>
 
@@ -149,6 +149,7 @@
                     <header>
                         <button name="accept_offer" type="object" string="Sold" class="btn btn-primary"/>
                         <button name="reject_offer" type="object" string="Cancel" class="btn btn-danger"/>
+                        <button name="action_send_email" type="object" string="Send Email" class="btn btn-primary"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -162,8 +163,11 @@
 <!--                            <button class="oe_stat_button" name="action_client_action" type="object">-->
 <!--                                <field name="offer_count" string="Testing Client" widget="statinfo"/>-->
 <!--                            </button>-->
-                            <button class="oe_stat_button" name="action_url_action" type="object">
-                                <i class="fa fa-external-link"/>Visit Odoo
+<!--                            <button class="oe_stat_button" name="action_url_action" type="object">-->
+<!--                                <i class="fa fa-external-link"/>Visit Odoo-->
+<!--                            </button>-->
+                            <button class="oe_stat_button" name="website_publish_button" type="object" icon="fa-globe">
+                                <field name="is_published" widget="website_publish_button"/>
                             </button>
                         </div>
                         <group>
@@ -202,18 +206,29 @@
                                         <field name="validity"/>
                                         <field name="deadline"/>
                                         <field name="status" nolabel="1"/>
+                                        <button name="action_accept_offer" type="object" icon="fa-check" string="Accept"/>
+                                        <button name="action_decline_offer" type="object" icon="fa-times" string="Decline"/>
                                     </tree>
                                 </field>
                             </page>
                             <page string="Other Information">
                                 <group>
                                     <field name="sales_id"/>
+<!--                                    <field name="campaign_id"/>-->
+<!--                                    <field name="source_id"/>-->
+<!--                                    <field name="medium_id"/>-->
                                     <field name="buyer_id"/>
                                     <field name="phone"/>
+                                    <field name="website_url"/>
                                 </group>
                             </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>

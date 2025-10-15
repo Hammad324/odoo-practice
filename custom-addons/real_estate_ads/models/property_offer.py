@@ -43,6 +43,7 @@ class PropertyOffer(models.Model):
         ('accepted', 'Accepted'), ('refused', 'Refused')],
         string="Status")
     partner_id = fields.Many2one('res.partner', string='Customer') # change customer to partner
+    partner_email = fields.Char(string='Customer Email Address', related='partner_id.email')
     property_id = fields.Many2one('estate.property', string='Property')
     validity = fields.Integer(string='Validity')
     deadline = fields.Date(string='Deadline', compute='_compute_deadline', inverse="_inverse_deadline")
@@ -81,7 +82,7 @@ class PropertyOffer(models.Model):
 
     def extend_offer_deadline(self):
         activ_ids = self._context.get('active_ids', [])
-        print(activ_ids)
+        # print(activ_ids)
         if activ_ids:
             offer_ids = self.env['estate.property.offer'].browse('activ_ids')
             for offer in offer_ids:
@@ -92,6 +93,31 @@ class PropertyOffer(models.Model):
         offer_ids = self.env['estate.property.offer'].search([])
         for offer in offer_ids:
             offer.validity += 1
+
+    def action_accept_offer(self):
+        if self.property_id:
+            self._validate_accepted_offer()
+            self.property_id.write({
+                'selling_price': self.price,
+                'state': 'accepted'
+            })
+        self.status = 'accepted'
+
+    def _validate_accepted_offer(self): # checks if the offer has been accepted before.
+        offer_ids = self.env['estate.property.offer'].search([
+            ('property_id', '=', self.property_id.id),
+            ('status', '=', 'accepted'),
+        ])
+        if offer_ids:
+            raise ValidationError("You have an accepted offer already")
+
+    def action_decline_offer(self):
+        self.status = 'refused'
+        if all(self.property_id.offer_ids.mapped('status')):
+            self.property_id.write({
+                'selling_price': 0,
+                'state': 'received'
+            })
 
 # this cron job runs every day and with this function it will clear all the offers whose status is refused.
 #     @api.autovaccum
