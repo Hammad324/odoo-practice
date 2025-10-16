@@ -38,7 +38,7 @@ class PropertyOffer(models.Model):
                 rec.name = False
 
     name = fields.Char('Property Name', compute="_compute_name")
-    price = fields.Float(string='Price')
+    price = fields.Monetary(string='Price')
     status = fields.Selection([
         ('accepted', 'Accepted'), ('refused', 'Refused')],
         string="Status")
@@ -47,6 +47,8 @@ class PropertyOffer(models.Model):
     property_id = fields.Many2one('estate.property', string='Property')
     validity = fields.Integer(string='Validity')
     deadline = fields.Date(string='Deadline', compute='_compute_deadline', inverse="_inverse_deadline")
+    currency_id = fields.Many2one('res.currency', string="Currency",
+                                  default=lambda self: self.env.user.company_id.currency_id)
 
     # this decorator is a model based decorator, it does not depend on a single record,
     # for example we want to print something when a change happens in the model this is where

@@ -12,15 +12,15 @@ class Property(models.Model):
         ('accepted', 'Offer Accepted'),
         ('sold', 'Sold'),
         ('cancelled', 'Cancelled')
-    ], string="Status", default='new')
+    ], string="Status", default='new', group_expand='_expand_state')
     tag_id = fields.Many2many('estate.property.tag', string="Property Tag")
     type_id = fields.Many2one('estate.property.type', string="Property Type")
     description = fields.Text(string="Description")
     post_code = fields.Char(string="Postcode")
     date_availability = fields.Date(string="Date Available")
-    expected_price = fields.Float(string="Expected Price", tracking=True)
-    best_offer = fields.Float(string="Best Offer")
-    selling_price = fields.Float(string="Selling Price")
+    expected_price = fields.Monetary(string="Expected Price", tracking=True)
+    best_offer = fields.Monetary(string="Best Offer")
+    selling_price = fields.Monetary(string="Selling Price")
     bedrooms = fields.Integer(string="Bedrooms")
     living_area = fields.Integer(string="Living Area")
     facades = fields.Integer(string="Facades")
@@ -35,6 +35,7 @@ class Property(models.Model):
     buyer_id = fields.Many2one('res.partner', string="Buyer", domain=[("is_company", "=", True)])
     # domain is basically the WHERE clause in sql
     phone = fields.Char(string="Phone", related="buyer_id.phone")
+    currency_id = fields.Many2one('res.currency', string="Currency", default=lambda self: self.env.user.company_id.currency_id)
 
 # I will implement the onchange here.
 
@@ -109,6 +110,11 @@ class Property(models.Model):
 
     def _get_emails(self):
         return ','.join(self.offer_ids.mapped('partner_email'))
+
+    def _expand_state(self, state, domain, order):
+        return [
+            key for key, domain in type(self).state.selection
+        ]
 
 class PropertyType(models.Model):
     _name = 'estate.property.type'
